@@ -1,0 +1,2 @@
+ALTER TABLE {{table}} ADD COLUMN {{referencedClassToLowerCase}}_id INTEGER REFERENCES {{referencedClass}}(id);
+CREATE UNIQUE INDEX idx_{{referencedClassToLowerCase}}_id ON {{table}}({{referencedClassToLowerCase}}_id);

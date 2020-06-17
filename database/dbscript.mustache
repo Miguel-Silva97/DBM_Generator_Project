@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS {{tableName}} (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    {{#tableColumns}}
+    {{name}} {{type}} {{required}} {{unique}} {{&constraint}} {{#needComma}},{{/needComma}}
+    {{/tableColumns}}
+)

@@ -1,0 +1,14 @@
+{
+  "title": "Genre",
+  "description": "Classe utilizada para representar um genero de uma musica",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Nome do genero",
+      "prettyName": "Género",
+      "type": "string",
+      "maxLength": 254
+    }
+  },
+  "required": ["name"]
+}

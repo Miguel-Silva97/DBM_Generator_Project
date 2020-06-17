@@ -1,0 +1,174 @@
+const express = require('express');
+var router = express.Router();
+
+var {{title}} = require('../Models/{{title}}.js');
+var schema{{title}} = require('../Schemas/Schema-{{title}}.json');
+
+
+router.get('/{{title}}', (req,res) => {
+    {{title}}.all((rows) => {
+        res.render('list', {
+            title: 'Backoffice {{title}}',
+            name: '{{title}}',
+            columns: function () {
+                let prettyNames = [];
+                let requiredProps = schema{{title}}.required;
+                
+                Object.entries(schema{{title}}.properties).forEach(prop => {
+                    prop.forEach(p => {
+                        if(p.prettyName !== undefined && requiredProps.includes(prop[0])){
+                            prettyNames.push(p.prettyName);
+                        }
+                    });
+                });
+                
+                return prettyNames;
+            },
+            rows: rows.map(obj => {
+                return {
+                    properties: Object.keys(obj).map(key => obj[key]),
+                    actions: [{
+                        link: './{{title}}/Details/' + obj.id,
+                        image:{ src: '../../images/read.png', alt: 'read' },
+                        tooltip: 'Details'
+                        }, {
+                        link: './{{title}}/Edit/' + obj.id,
+                        image: { src: '../../images/edit.png', alt: 'edit' },
+                        tooltip: 'Edit'
+                        }, {
+                        link: '#',
+                        image: { src: '../../images/delete.png', alt: 'delete'},
+                        tooltip: 'Delete',
+                        events: [{
+                        name: "onclick",
+                        function: "remove",
+                        args: obj.id
+                        }]
+                    }]
+                }
+            })
+        })
+    })
+});
+
+router.get('/{{title}}/Details/:id', (req,res) => {
+    {{title}}.get(req.params.id, function (row){
+        res.render('details', {
+            properties: function () {
+                let allProps = Object.getOwnPropertyNames(row);
+                let validProps = [];
+
+                allProps.forEach((prop) => {
+                    if(schema{{title}}.properties.hasOwnProperty(prop)){
+                        validProps.push({
+                            name: schema{{title}}.properties[prop]["prettyName"],
+                            value: row[prop]
+                        });
+                    }
+                })
+                return validProps;
+            }
+        });
+    });
+});
+
+router.get('/{{title}}/Insert', (req,res) => {
+    
+        res.render('insert', {
+            properties: function () {
+                let allProps = Object.getOwnPropertyNames(new {{title}}());
+                let validProps = [];
+                let types = {
+                    integer: "text",
+                    number: "number",
+                    string: "text",
+                    date: "date",
+                };
+
+                
+                allProps.forEach((prop) => {
+                    if(schema{{title}}.properties.hasOwnProperty(prop)){
+                        validProps.push({
+                            name: schema{{title}}.properties[prop]["prettyName"],
+                            type: types[schema{{title}}.properties[prop].type],
+                            required: schema{{title}}.required.includes(prop),
+                            constraints: function() {
+                                let constra = [];
+                                let constraintTypes = {
+                                    minimum: "min",
+                                    maximum: "max",
+                                    minLength: "minLength",
+                                    maxLength: "maxLength"
+                                };
+                                Object.keys(constraintTypes).forEach(c => {
+                                    if(schema{{title}}.properties[prop][c] !== undefined) {
+                                        constra.push({
+                                            name: constraintTypes[c],
+                                            constValue: schema{{title}}.properties[prop][c]
+                                        })
+                                    }
+                                })
+                                return constra;
+                            }
+                        });
+                    }
+                })
+                return validProps;
+            }
+        });
+    
+});
+
+
+router.get('/{{title}}/Edit/:id', (req,res) => {
+        {{title}}.get(req.params.id, function (row){
+        res.render('edit', {
+            id: req.params.id,
+            properties: function () {
+                let allProps = Object.getOwnPropertyNames(new {{title}}());
+                let validProps = [];
+                let types = {
+                    integer: "text",
+                    number: "number",
+                    string: "text",
+                    date: "date",
+                };
+                
+                
+                allProps.forEach((prop) => {
+                    if(schema{{title}}.properties.hasOwnProperty(prop)){
+                        validProps.push({
+                            name: schema{{title}}.properties[prop]["prettyName"],
+                            type: types[schema{{title}}.properties[prop].type],
+                            value: row[prop],
+                            constraints: function() {
+                                let constra = [];
+                                let constraintTypes = {
+                                    minimum: "min",
+                                    maximum: "max",
+                                    minLength: "minLength",
+                                    maxLength: "maxLength"
+                                };
+                                Object.keys(constraintTypes).forEach(c => {
+                                    if(schema{{title}}.properties[prop][c] !== undefined) {
+                                        constra.push({
+                                            name: constraintTypes[c],
+                                            constValue: schema{{title}}.properties[prop][c]
+                                        })
+                                    }
+                                })
+                                return constra;
+                            }
+                            
+                        });
+                    }
+                })
+                return validProps;
+            }
+        });
+
+    });
+    
+});
+
+module.exports = router;

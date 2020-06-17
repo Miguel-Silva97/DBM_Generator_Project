@@ -1,0 +1,51 @@
+
+const database = require('../database/sqlite-wrapper.js')('./Publish/Database/{{dbname}}');
+const schema{{classTitle}} = require('../Schemas/Schema-{{classTitle}}.json');
+const jsf = require('json-schema-faker');
+const faker = require('faker');
+jsf.extend('faker', () => { return faker });
+
+
+
+class {{classTitle}} {
+   constructor ({{constructorArguments}}) {
+      {{#classConstructor}} 
+   this.{{name}} = {{name}};
+      {{/classConstructor}} 
+
+      {{#classEnumerables}} 
+   Object.defineProperty(this,"{{name}}", { enumerable: false });
+      {{/classEnumerables}} 
+
+      {{#classReferences}}
+   Object.defineProperty(this, "{{name}}", { enumerable: false, writable: true });
+      {{/classReferences}}
+   Object.defineProperty(this,"{{primaryKey}}", { enumerable: false, writable: true });
+
+ }
+
+   static create() {
+    return Object.assign(new {{classTitle}}(), jsf.generate(schema{{classTitle}}));
+   }
+
+   static all(callback){
+      database.where("SELECT * FROM {{table}}", [] , {{classTitle}}, callback);
+   }
+
+   static get(id, callback){
+      database.get("SELECT * FROM {{table}} WHERE id = ?", [id], {{classTitle}}, callback);
+   }
+
+   static delete(id, callback){
+      database.run("DELETE FROM {{table}} WHERE id = ?", [id], callback);
+   }
+
+   save (callback){
+      if(this.id)
+         database.run("UPDATE {{table}} SET {{&updateVariables}} WHERE id = ?", [{{thisVariables}}, this.id], callback);
+      else
+         database.run("INSERT INTO {{table}} ({{variables}}) VALUES ({{totalVariables}})", [{{thisVariables}}], callback);
+   }
+}
+
+module.exports = {{classTitle}};

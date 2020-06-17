@@ -1,0 +1,56 @@
+{
+  "port": "8088",
+  "schemas": [
+    {
+      "name": "Song",
+      "path": "./schemas/Schema-Song.json"
+    },
+    {
+      "name": "Album",
+      "path": "./schemas/Schema-Album.json"
+    },
+    {
+      "name": "Artist",
+      "path": "./schemas/Schema-Artist.json"
+    },
+    {
+      "name": "Genre",
+      "path": "./schemas/Schema-Genre.json"
+    }
+  ],
+  "dbname": "labs.db",
+  "staticFiles": [
+    {
+      "originalPath": "./database/sqlite-wrapper.js",
+      "destinationPath": "./Publish/Database/sqlite-wrapper.js"
+    },
+    {
+      "originalPath": "./staticFiles/list.mustache",
+      "destinationPath": "./Publish/Views/list.mustache"
+    },
+    {
+      "originalPath": "./staticFiles/delete.png",
+      "destinationPath": "./Publish/Public/images/delete.png"
+    },
+    {
+      "originalPath": "./staticFiles/edit.png",
+      "destinationPath": "./Publish/Public/images/edit.png"
+    },
+    {
+      "originalPath": "./staticFiles/read.png",
+      "destinationPath": "./Publish/Public/images/read.png"
+    },
+    {
+      "originalPath": "./staticFiles/details.mustache",
+      "destinationPath": "./Publish/Views/details.mustache"
+    },
+    {
+      "originalPath": "./staticFiles/edit.mustache",
+      "destinationPath": "./Publish/Views/edit.mustache"
+    },
+    {
+      "originalPath": "./staticFiles/insert.mustache",
+      "destinationPath": "./Publish/Views/insert.mustache"
+    }
+  ]
+}

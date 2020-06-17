@@ -1,0 +1,29 @@
+{
+  "title": "Artist",
+  "description": "Classe utilizada para representar um musico",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Nome do artista",
+      "prettyName": "Nome",
+      "type": "string",
+      "faker": "name.findName",
+      "maxLength": 254
+    },
+    "email": {
+      "description": "Email de um artista",
+      "prettyName": "Email",
+      "type": "string",
+      "maxLength": 254,
+      "faker": "internet.email"
+    },
+    "nationality": {
+      "description": "Nacionalidade de um artista",
+      "prettyName": "Nacionalidade",
+      "type": "string",
+      "faker": "address.country",
+      "maxLength": 254
+    }
+  },
+  "required": ["name", "email", "nationality"]
+}

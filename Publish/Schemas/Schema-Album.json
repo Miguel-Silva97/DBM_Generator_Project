@@ -1,0 +1,65 @@
+{
+  "title": "Album",
+  "description": "Classe utilizada para representar um album",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Nome de um album",
+      "prettyName": "Nome",
+      "type": "string",
+      "maxLength": 254
+    },
+    "releaseDate": {
+      "description": "Data de lançamento de um album",
+      "prettyName": "Data de Lançamento",
+      "type": "date",
+      "faker": "date.past"
+    },
+    "ean": {
+      "description": "Código de barras do produto",
+      "prettyName": "EAN",
+      "type": "integer",
+      "pattern": "^[0-9]{8}$",
+      "unique": true,
+      "maxLength": 13
+    },
+    "information": {
+      "description": "Alguma informaçao/resumo sobre o album",
+      "prettyName": "Descrição",
+      "type": "string"
+    },
+    "label": {
+      "description": "Editora do album",
+      "prettyName": "Editora",
+      "type": "string",
+      "faker": "company.companyName",
+      "maxLength": 254
+    },
+    "copyright": {
+      "description": "Termos de copyright do album",
+      "prettyName": "Copyright",
+      "type": "string",
+      "maxLength": 254
+    },
+    "totalLength": {
+      "description": "Tamanho total do album em minutos",
+      "prettyName": "Comprimento Total",
+      "type": "integer",
+      "faker": "random.number"
+    }
+  },
+  "required": [
+    "releaseDate",
+    "ean",
+    "name",
+    "label",
+    "copyright",
+    "totalLength"
+  ],
+  "references": [
+    {
+      "model": "Artist",
+      "relation": "1-M"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "title": "Song",
+  "description": "Classe utilizada para representar uma musica",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Nome de uma musica",
+      "prettyName": "Nome da Música",
+      "type": "string",
+      "maxLength": 254
+    },
+    "releaseDate": {
+      "description": "Data de lançamento de uma musica",
+      "prettyName": "Data de Lançamento",
+      "type": "date",
+      "faker": "date.past"
+    },
+    "features": {
+      "description": "Artistas que participaram na musica além do artista principal",
+      "prettyName": "Colaborações",
+      "type": "string",
+      "faker": "name.findName",
+      "maxLength": 254
+    },
+    "musicLength": {
+      "description": "Tamanho da musica em minutos",
+      "prettyName": "Comprimento da Música",
+      "type": "integer",
+      "faker": "random.number"
+    }
+  },
+  "required": ["releaseDate", "name", "musicLength"],
+  "references": [
+    {
+      "model": "Artist",
+      "relation": "1-M"
+    },
+    {
+      "model": "Genre",
+      "relation": "M-M"
+    },
+    {
+      "model": "Album",
+      "relation": "1-M"
+    }
+  ]
+}
