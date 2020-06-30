@@ -4,18 +4,150 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+ <script> 
+function ajaxCall(){
+    
+    var xmlhttp = new XMLHttpRequest();
+    
+
+    xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == XMLHttpRequest.DONE) {   
+            
+           if (xmlhttp.status == 201) {
+               console.log('Success Creating!');
+               window.location.href = 'http://localhost:8088/backoffice/{{title}}';
+           }
+           else {
+               alert('Error Creating New Instance!');
+           }
+        }
+    }
+
+    form = document.forms[0];
+    let variablesArray = [];
+    let finalData = {};
+    let data = {};
+    let arrayData = {};
+    {{#labels}} variablesArray.push('{{name}}'); {{/labels}}
+    
+    variablesArray.forEach(v => {
+        
+        data[v] = document.getElementById(v).value;
+        
+    });
+    
+    {{#hasReferences}}
+        {{#references}}
+            if({{isManyToMany}}){
+                let chosenValues = [];
+                let checkboxes = document.getElementsByName("check-" + '{{model}}'.toLowerCase() + "_id");
+                checkboxes.forEach(check => {
+                    if(check.checked){
+                        chosenValues.push(check.value);
+                    }
+                });
+
+                arrayData['{{model}}Array'] = chosenValues;
+            } else {
+                let modelId = '{{model}}'.toLowerCase() + "_id";
+                let select = document.getElementById(modelId);
+                let chosenValue = select.options[select.selectedIndex].value;
+                data[modelId] = chosenValue;
+            }
+            
+        {{/references}}
+    {{/hasReferences}}
+
+    finalData["classe"] = data;
+    finalData["arrays"] = arrayData;
+
+    console.log(finalData);
+    
+    xmlhttp.open("POST","/api/{{title}}", true);    
+    xmlhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xmlhttp.send(JSON.stringify(finalData));  
+    
+}
+</script>
+
+<script>
+ {{#hasReferences}}
+ function loadValues(model, label, controlId, isManyToMany){
+ var xhr = new XMLHttpRequest();
+ xhr.open("GET", `../../../api/${model}`, true);
+ xhr.onreadystatechange = function () {
+ if(xhr.readyState === 4 && xhr.status === 200) {
+ var control = document.getElementById(controlId);
+ var response = JSON.parse(this.responseText);
+ if(isManyToMany){
+     response.forEach(row => {
+        let checkbox = document.createElement("INPUT");
+        let newDiv = document.createElement("DIV");
+        newDiv.className = "form-control";
+        checkbox.className = "";
+        checkbox.type = "checkbox";
+        checkbox.value = row["id"];
+        checkbox.name = "check-" + model.toLowerCase() + "_id";
+        let labelAdd = document.createElement("LABEL");
+        labelAdd.htmlFor = "check";
+        labelAdd.appendChild(document.createTextNode(row[label]));
+        
+        newDiv.appendChild(checkbox);
+        newDiv.appendChild(labelAdd);
+
+        control.appendChild(newDiv);
+        
+
+     });
+ }else{
+     let select = document.createElement("SELECT");
+     select.id = model.toLowerCase()+"_id";
+     select.name = model.toLowerCase()+"_id";
+     select.className = "form-control";
+     response.forEach(row => {
+        let option = document.createElement("option");
+        option.text = row[label];
+        option.value = row["id"];
+        select.add(option);
+    });
+    control.appendChild(select);
+ }
+ }
+ }
+ xhr.send();
+ }
+
+ window.onload = function() {
+
+ {{#references}}
+ loadValues('{{model}}','{{label}}','div{{model}}value',
+{{isManyToMany}});
+ {{/references}}
+
+ }
+ {{/hasReferences}}
+ 
+ </script>
 
 
 </head>
  <body>
- <form onsubmit="ajaxCall(); return false;" method="Post">
+ <form>
  {{#properties}}
  <div class="form-group col-md-6">
  <label>{{name}} {{#required}}*Obrigatório{{/required}}:</label>
- <input type="{{type}}" class="form-control" name="{{name}}" {{#constraints}} {{name}}="{{constValue}}" {{/constraints}}  {{#required}}required{{/required}}></input>
+ <input type="{{type}}" class="form-control" name="{{correctName}}" id="{{correctName}}" {{#constraints}} {{name}}="{{constValue}}" {{/constraints}}  {{#required}}required{{/required}}></input>
  </div>
  {{/properties}}
- <input type="submit"  class="btn btn-primary" value="Registar" />
+
+{{#references}}
+<div class="form-group col-md-6">
+ <label>{{model}}:</label>
+ <div id="div{{model}}value"></div>
+</div>
+{{/references}}
+
+ <button type="button"  class="btn btn-primary" onclick="ajaxCall()" style="margin-top: 5rem">Inserir</button>
  </form>
  </body>
 </html>

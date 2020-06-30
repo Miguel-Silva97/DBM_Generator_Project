@@ -32,11 +32,34 @@ class Genre {
       database.run("DELETE FROM Genre WHERE id = ?", [id], callback);
    }
 
+   static many(model, id, callback){
+      let tablename = "Genre".localeCompare(model) === -1 ? "Genre_" + model : model
+      + "_Genre";
+      database.where(`SELECT Genre.*
+      FROM Genre
+      INNER JOIN ${tablename} ON ${tablename}.genre_id = Genre.id
+      WHERE ${tablename}.${model.toLowerCase()}_id = ?`, [id],
+      Genre, callback);
+   }
+
    save (callback){
+      if(false === false){
       if(this.id)
          database.run("UPDATE Genre SET name = ?  WHERE id = ?", [this.name, this.id], callback);
       else
          database.run("INSERT INTO Genre (name) VALUES (?)", [this.name], callback);
+      } else {
+
+         if(this.id){
+             database.run("UPDATE Genre SET name = ?  WHERE id = ?", [this.name, this.id], callback);
+         } else {
+            database.run("INSERT INTO Genre (name) VALUES (?)", [this.name], (cb) => {
+            });
+            
+         }
+
+         
+      }
    }
 }
 

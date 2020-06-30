@@ -67,7 +67,25 @@ router.get('/Album/Details/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaAlbum.references) {
+                schemaAlbum.references.forEach(function (ref) {
+                allRefs.push({
+                labelRef: ref.label,
+                model: ref.model,
+                values: ref.relation === "M-M" ? '/Album/' +
+                req.params.id : row[(ref.model + "_id").toLowerCase()]
+                     });
+                    });
+                }
+                return allRefs;
+                },
+                get hasReferences() {
+                return this.references().length > 0;
+                }
+
         });
     });
 });
@@ -75,6 +93,19 @@ router.get('/Album/Details/:id', (req,res) => {
 router.get('/Album/Insert', (req,res) => {
     
         res.render('insert', {
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Album());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaAlbum.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Album",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Album());
                 let validProps = [];
@@ -90,6 +121,7 @@ router.get('/Album/Insert', (req,res) => {
                     if(schemaAlbum.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaAlbum.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaAlbum.properties[prop].type],
                             required: schemaAlbum.required.includes(prop),
                             constraints: function() {
@@ -114,7 +146,23 @@ router.get('/Album/Insert', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaAlbum.references) {
+                    schemaAlbum.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
     
 });
@@ -123,7 +171,21 @@ router.get('/Album/Insert', (req,res) => {
 router.get('/Album/Edit/:id', (req,res) => {
         Album.get(req.params.id, function (row){
         res.render('edit', {
+            
             id: req.params.id,
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Album());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaAlbum.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Album",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Album());
                 let validProps = [];
@@ -139,8 +201,10 @@ router.get('/Album/Edit/:id', (req,res) => {
                     if(schemaAlbum.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaAlbum.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaAlbum.properties[prop].type],
                             value: row[prop],
+                            required: schemaAlbum.required.includes(prop),
                             constraints: function() {
                                 let constra = [];
                                 let constraintTypes = {
@@ -164,7 +228,23 @@ router.get('/Album/Edit/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaAlbum.references) {
+                    schemaAlbum.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
 
     });

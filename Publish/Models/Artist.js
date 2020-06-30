@@ -34,11 +34,34 @@ class Artist {
       database.run("DELETE FROM Artist WHERE id = ?", [id], callback);
    }
 
+   static many(model, id, callback){
+      let tablename = "Artist".localeCompare(model) === -1 ? "Artist_" + model : model
+      + "_Artist";
+      database.where(`SELECT Artist.*
+      FROM Artist
+      INNER JOIN ${tablename} ON ${tablename}.artist_id = Artist.id
+      WHERE ${tablename}.${model.toLowerCase()}_id = ?`, [id],
+      Artist, callback);
+   }
+
    save (callback){
+      if(false === false){
       if(this.id)
          database.run("UPDATE Artist SET name = ?, email = ?, nationality = ?  WHERE id = ?", [this.name, this.email, this.nationality, this.id], callback);
       else
          database.run("INSERT INTO Artist (name, email, nationality) VALUES (?, ?, ?)", [this.name, this.email, this.nationality], callback);
+      } else {
+
+         if(this.id){
+             database.run("UPDATE Artist SET name = ?, email = ?, nationality = ?  WHERE id = ?", [this.name, this.email, this.nationality, this.id], callback);
+         } else {
+            database.run("INSERT INTO Artist (name, email, nationality) VALUES (?, ?, ?)", [this.name, this.email, this.nationality], (cb) => {
+            });
+            
+         }
+
+         
+      }
    }
 }
 

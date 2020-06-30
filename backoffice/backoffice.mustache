@@ -67,7 +67,25 @@ router.get('/{{title}}/Details/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schema{{title}}.references) {
+                schema{{title}}.references.forEach(function (ref) {
+                allRefs.push({
+                labelRef: ref.label,
+                model: ref.model,
+                values: ref.relation === "M-M" ? '/{{title}}/' +
+                req.params.id : row[(ref.model + "_id").toLowerCase()]
+                     });
+                    });
+                }
+                return allRefs;
+                },
+                get hasReferences() {
+                return this.references().length > 0;
+                }
+
         });
     });
 });
@@ -75,6 +93,19 @@ router.get('/{{title}}/Details/:id', (req,res) => {
 router.get('/{{title}}/Insert', (req,res) => {
     
         res.render('insert', {
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new {{title}}());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schema{{title}}.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "{{title}}",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new {{title}}());
                 let validProps = [];
@@ -90,6 +121,7 @@ router.get('/{{title}}/Insert', (req,res) => {
                     if(schema{{title}}.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schema{{title}}.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schema{{title}}.properties[prop].type],
                             required: schema{{title}}.required.includes(prop),
                             constraints: function() {
@@ -114,7 +146,23 @@ router.get('/{{title}}/Insert', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schema{{title}}.references) {
+                    schema{{title}}.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
     
 });
@@ -123,7 +171,21 @@ router.get('/{{title}}/Insert', (req,res) => {
 router.get('/{{title}}/Edit/:id', (req,res) => {
         {{title}}.get(req.params.id, function (row){
         res.render('edit', {
+            
             id: req.params.id,
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new {{title}}());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schema{{title}}.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "{{title}}",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new {{title}}());
                 let validProps = [];
@@ -139,8 +201,10 @@ router.get('/{{title}}/Edit/:id', (req,res) => {
                     if(schema{{title}}.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schema{{title}}.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schema{{title}}.properties[prop].type],
                             value: row[prop],
+                            required: schema{{title}}.required.includes(prop),
                             constraints: function() {
                                 let constra = [];
                                 let constraintTypes = {
@@ -164,7 +228,23 @@ router.get('/{{title}}/Edit/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schema{{title}}.references) {
+                    schema{{title}}.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
 
     });

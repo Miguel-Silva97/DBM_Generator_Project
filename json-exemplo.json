@@ -1,0 +1,13 @@
+{
+  "title": "Titulo da sua classe",
+  "description": "Descrição da sua classe",
+  "type": "object",
+  "properties": {
+    "nomeVariavelPretendida": {
+      "description": "Descrição da sua variavel",
+      "prettyName": "Nome da variavel 'bonito' para ser displayed",
+      "type": "tipo da variavel, escolher: date, string, integer, number"
+    }
+  },
+  "required": ["nomeVariavelPretendida"]
+}

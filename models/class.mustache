@@ -40,11 +40,47 @@ class {{classTitle}} {
       database.run("DELETE FROM {{table}} WHERE id = ?", [id], callback);
    }
 
-   save (callback){
+   static many(model, id, callback){
+      let tablename = "{{classTitle}}".localeCompare(model) === -1 ? "{{classTitle}}_" + model : model
+      + "_{{classTitle}}";
+      database.where(`SELECT {{classTitle}}.*
+      FROM {{classTitle}}
+      INNER JOIN ${tablename} ON ${tablename}.{{classTitleLowerCase}}_id = {{classTitle}}.id
+      WHERE ${tablename}.${model.toLowerCase()}_id = ?`, [id],
+      {{classTitle}}, callback);
+   }
+
+   save ({{#manyToManyReferences}} {{modelReferenced}}Array, {{/manyToManyReferences}}callback){
+      if({{manyToManyBoolean}} === false){
       if(this.id)
          database.run("UPDATE {{table}} SET {{&updateVariables}} WHERE id = ?", [{{thisVariables}}, this.id], callback);
       else
          database.run("INSERT INTO {{table}} ({{variables}}) VALUES ({{totalVariables}})", [{{thisVariables}}], callback);
+      } else {
+
+         if(this.id){
+             database.run("UPDATE {{table}} SET {{&updateVariables}} WHERE id = ?", [{{thisVariables}}, this.id], callback);
+             {{#manyToManyReferences}}
+               
+                  database.run("DELETE FROM {{table}}_{{modelReferenced}} WHERE {{tableThis}} = ?", this.id, callback);
+
+                  {{modelReferenced}}Array.forEach(ref => {
+                     database.run("INSERT INTO {{table}}_{{modelReferenced}} ({{tableThis}},{{modelThis}}) VALUES (? , ?)", [this.id, ref], callback);
+                  });
+             {{/manyToManyReferences}}
+         } else {
+            database.run("INSERT INTO {{table}} ({{variables}}) VALUES ({{totalVariables}})", [{{thisVariables}}], (cb) => {
+               {{#manyToManyReferences}}
+                  {{modelReferenced}}Array.forEach(ref => {
+                     database.run("INSERT INTO {{table}}_{{modelReferenced}} ({{tableThis}},{{modelThis}}) VALUES (? , ?)", [cb.id, ref], callback);
+                    });
+               {{/manyToManyReferences}}
+            });
+            
+         }
+
+         
+      }
    }
 }
 

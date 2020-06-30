@@ -84,6 +84,7 @@ function generateRelationships(databaseName, schemaPath) {
   var schema = require("." + schemaPath);
   let templateName = "";
   let view = {};
+  let indexView = {};
 
   if (schema.references) {
     let db = new sqlite3.Database(
@@ -95,6 +96,7 @@ function generateRelationships(databaseName, schemaPath) {
     );
 
     schema.references.forEach((reference) => {
+      indexView = "";
       if (reference.relation === "1-M") {
         templateName = "one-to-many";
         view = {
@@ -105,6 +107,10 @@ function generateRelationships(databaseName, schemaPath) {
       } else if (reference.relation === "1-1") {
         templateName = "one-to-one";
         view = {
+          table: schema.title,
+          referencedClassToLowerCase: reference.model.toLowerCase(),
+        };
+        indexView = {
           table: schema.title,
           referencedClassToLowerCase: reference.model.toLowerCase(),
           referencedClass: reference.model,
@@ -122,11 +128,22 @@ function generateRelationships(databaseName, schemaPath) {
       let template = fs.readFileSync(
         "./database/" + templateName + ".mustache"
       );
-      let output = mustache.render(template.toString(), view);
+      let indexTemplate = fs.readFileSync("./database/one-to-many.mustache");
+      let outputIndex = mustache.render(indexTemplate.toString(), indexView);
 
-      db.serialize(() => {
-        db.run(output);
-      });
+      let output = mustache.render(template.toString(), view);
+      if (templateName !== "one-to-one") {
+        db.serialize(() => {
+          db.run(output);
+        });
+      } else if (templateName === "one-to-one") {
+        db.serialize(() => {
+          db.run(outputIndex);
+          db.serialize(() => {
+            db.run(output);
+          });
+        });
+      }
     });
 
     db.close((err) => {

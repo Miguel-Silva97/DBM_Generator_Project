@@ -13,6 +13,9 @@ function generateClass(schemaPath, databasename) {
   let thisStrings = "";
   let variablesString = "";
   let totalVariablesString = "";
+  let manyToManyReferences = [];
+  let manyToManyBoolean = false;
+  let referencesNotMany = [];
 
   Object.keys(schema.properties).forEach((element, i, aux) => {
     classVariables.push(element);
@@ -48,13 +51,35 @@ function generateClass(schemaPath, databasename) {
   if (schema.references) {
     schema.references.forEach((ref) => {
       if (ref.relation == "1-M" || ref.relation == "1-1") {
+        referencesNotMany.push(ref);
         references.push({ name: ref.model.toLowerCase() + "_id" });
+      } else {
+        manyToManyReferences.push({
+          modelReferenced: ref.model,
+          modelThis: ref.model.toLowerCase() + "_id",
+        });
+        manyToManyBoolean = true;
       }
     });
   }
 
+  referencesNotMany.forEach((element, i, aux) => {
+    if (i !== aux.length - 1) {
+      variablesString += ", " + element.model.toLowerCase() + "_id";
+      totalVariablesString += ", ?";
+      thisStrings += ", this." + element.model.toLowerCase() + "_id";
+      updateStrings += ", " + element.model.toLowerCase() + "_id = ?";
+    } else {
+      variablesString += ", " + element.model.toLowerCase() + "_id";
+      totalVariablesString += ", ?";
+      thisStrings += ", this." + element.model.toLowerCase() + "_id";
+      updateStrings += ", " + element.model.toLowerCase() + "_id = ?";
+    }
+  });
+
   var view = {
     classTitle: schema.title,
+    classTitleLowerCase: schema.title.toLowerCase(),
     constructorArguments: classVariables.join(),
     classConstructor: arrayVariables,
     classReferences: references,
@@ -66,6 +91,9 @@ function generateClass(schemaPath, databasename) {
     thisVariables: thisStrings,
     variables: variablesString,
     totalVariables: totalVariablesString,
+    manyToManyReferences: manyToManyReferences,
+    manyToManyBoolean: manyToManyBoolean,
+    tableThis: schema.title.toLowerCase() + "_id",
   };
   var output = mustache.render(template.toString(), view);
 

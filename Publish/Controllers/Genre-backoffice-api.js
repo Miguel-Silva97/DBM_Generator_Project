@@ -67,7 +67,25 @@ router.get('/Genre/Details/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaGenre.references) {
+                schemaGenre.references.forEach(function (ref) {
+                allRefs.push({
+                labelRef: ref.label,
+                model: ref.model,
+                values: ref.relation === "M-M" ? '/Genre/' +
+                req.params.id : row[(ref.model + "_id").toLowerCase()]
+                     });
+                    });
+                }
+                return allRefs;
+                },
+                get hasReferences() {
+                return this.references().length > 0;
+                }
+
         });
     });
 });
@@ -75,6 +93,19 @@ router.get('/Genre/Details/:id', (req,res) => {
 router.get('/Genre/Insert', (req,res) => {
     
         res.render('insert', {
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Genre());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaGenre.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Genre",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Genre());
                 let validProps = [];
@@ -90,6 +121,7 @@ router.get('/Genre/Insert', (req,res) => {
                     if(schemaGenre.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaGenre.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaGenre.properties[prop].type],
                             required: schemaGenre.required.includes(prop),
                             constraints: function() {
@@ -114,7 +146,23 @@ router.get('/Genre/Insert', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaGenre.references) {
+                    schemaGenre.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
     
 });
@@ -123,7 +171,21 @@ router.get('/Genre/Insert', (req,res) => {
 router.get('/Genre/Edit/:id', (req,res) => {
         Genre.get(req.params.id, function (row){
         res.render('edit', {
+            
             id: req.params.id,
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Genre());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaGenre.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Genre",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Genre());
                 let validProps = [];
@@ -139,8 +201,10 @@ router.get('/Genre/Edit/:id', (req,res) => {
                     if(schemaGenre.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaGenre.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaGenre.properties[prop].type],
                             value: row[prop],
+                            required: schemaGenre.required.includes(prop),
                             constraints: function() {
                                 let constra = [];
                                 let constraintTypes = {
@@ -164,7 +228,23 @@ router.get('/Genre/Edit/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaGenre.references) {
+                    schemaGenre.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
 
     });

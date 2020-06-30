@@ -6,16 +6,28 @@ var {{classTitle}} = require('../Models/{{classTitle}}.js');
 module.exports = router;
 
 router.post('/', function(req,res){
-    let created = Object.assign(new {{classTitle}}(), req.body);
-    created.save(msg => res.json(msg));
+    let created = Object.assign(new {{classTitle}}(), req.body.classe);
+    {{#dates}} 
+        let date = new Date(created.{{name}});
+        created.{{name}} = date;
+    {{/dates}}
 
+    {{#arrayRelations}}
+        created.{{name}} = req.body.classe.{{name}};
+        console.log(req.body.classe.{{name}});
+    {{/arrayRelations}}
+    
+    
+    created.save({{#arrayrefs}}req.body.arrays.{{name}}, {{/arrayrefs}} msg => res.status(201).send());
+    
 });
+
+
 
 router.get('/', function (req, res) {
     {{classTitle}}.all(rows => {
-        console.log(rows);
         res.status(200);
-        res.send(JSON.stringify(rows));
+        res.send(JSON.stringify(rows, Object.keys(new {{classTitle}}()).concat(["id"])));
     });
 });
 
@@ -27,10 +39,23 @@ router.get('/:id', function (req, res) {
     );
 });
 
+router.get('/:model/:id', function (req, res) {
+ {{classTitle}}.many(req.params.model, req.params.id, rows => res.json(rows));
+});
+
+
 router.put('/:id', function (req, res) {
     {{classTitle}}.get(req.params.id, row => {
-        let created = Object.assign(row, req.body);
-        created.save(msg => res.json(msg));
+        let created = Object.assign(row, req.body.classe);
+        {{#dates}} 
+            let date = new Date(created.{{name}});
+            created.{{name}} = date;
+        {{/dates}}
+        {{#arrayRelations}}
+            created.{{name}} = req.body.classe.{{name}};
+            console.log(req.body.classe.{{name}});
+        {{/arrayRelations}}
+        created.save({{#arrayrefs}}req.body.arrays.{{name}}, {{/arrayrefs}}msg => res.status(200).send());
     });
 });
 

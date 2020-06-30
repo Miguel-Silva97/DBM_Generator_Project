@@ -67,7 +67,25 @@ router.get('/Artist/Details/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaArtist.references) {
+                schemaArtist.references.forEach(function (ref) {
+                allRefs.push({
+                labelRef: ref.label,
+                model: ref.model,
+                values: ref.relation === "M-M" ? '/Artist/' +
+                req.params.id : row[(ref.model + "_id").toLowerCase()]
+                     });
+                    });
+                }
+                return allRefs;
+                },
+                get hasReferences() {
+                return this.references().length > 0;
+                }
+
         });
     });
 });
@@ -75,6 +93,19 @@ router.get('/Artist/Details/:id', (req,res) => {
 router.get('/Artist/Insert', (req,res) => {
     
         res.render('insert', {
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Artist());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaArtist.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Artist",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Artist());
                 let validProps = [];
@@ -90,6 +121,7 @@ router.get('/Artist/Insert', (req,res) => {
                     if(schemaArtist.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaArtist.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaArtist.properties[prop].type],
                             required: schemaArtist.required.includes(prop),
                             constraints: function() {
@@ -114,7 +146,23 @@ router.get('/Artist/Insert', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaArtist.references) {
+                    schemaArtist.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
     
 });
@@ -123,7 +171,21 @@ router.get('/Artist/Insert', (req,res) => {
 router.get('/Artist/Edit/:id', (req,res) => {
         Artist.get(req.params.id, function (row){
         res.render('edit', {
+            
             id: req.params.id,
+            labels: function() {
+                let allProps = Object.getOwnPropertyNames(new Artist());
+                let varNames = [];
+                allProps.forEach((prop) => {
+                    if(schemaArtist.properties.hasOwnProperty(prop)){
+                        varNames.push({
+                            name: prop
+                        })
+                    }
+                })
+                return varNames;
+            },
+            title : "Artist",
             properties: function () {
                 let allProps = Object.getOwnPropertyNames(new Artist());
                 let validProps = [];
@@ -139,8 +201,10 @@ router.get('/Artist/Edit/:id', (req,res) => {
                     if(schemaArtist.properties.hasOwnProperty(prop)){
                         validProps.push({
                             name: schemaArtist.properties[prop]["prettyName"],
+                            correctName: prop,
                             type: types[schemaArtist.properties[prop].type],
                             value: row[prop],
+                            required: schemaArtist.required.includes(prop),
                             constraints: function() {
                                 let constra = [];
                                 let constraintTypes = {
@@ -164,7 +228,23 @@ router.get('/Artist/Edit/:id', (req,res) => {
                     }
                 })
                 return validProps;
-            }
+            },
+            references: function () {
+                var allRefs = [];
+                if (schemaArtist.references) {
+                    schemaArtist.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            isManyToMany: ref.relation === "M-M"
+                        });
+                    });
+                }
+                    return allRefs;
+                },
+            get hasReferences() {
+                return this.references().length > 0;
+                }
         });
 
     });

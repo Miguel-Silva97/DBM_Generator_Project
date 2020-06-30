@@ -1,9 +1,129 @@
 <!DOCTYPE html>
-<html>
-  <head> </head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>EasyApps Webpage</title>
+    <meta content="" name="descriptison" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet" />
+    <link
+      href="assets/vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/venobox/venobox.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/style.css" rel="stylesheet" />
+
+    <!-- =======================================================
+  * Template Name: Regna - v2.0.0
+  * Template URL: https://bootstrapmade.com/regna-bootstrap-onepage-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+    <script>
+      function generateSystem() {
+        $.post("http://localhost:8081/generate");
+      }
+    </script>
+  </head>
+
   <body>
-    <form action="/generate" method="POST">
-      <input type="submit" value="Publish and Generate" />
-    </form>
+    <!-- ======= Header ======= -->
+    <header id="header">
+      <div class="container">
+        <div id="logo" class="pull-left">
+          <a href="#hero"><img src="assets/img/logo.png" alt="" /></a>
+          <!-- Uncomment below if you prefer to use a text logo -->
+          <!--<h1><a href="#hero">Regna</a></h1>-->
+        </div>
+
+        <nav id="nav-menu-container">
+          <ul class="nav-menu">
+            <li class="menu-active">
+              <a href="http://localhost:8081">Página Inicial</a>
+            </li>
+            <li>
+              <a href="http://localhost:8081/jsonfiles.html">Ficheiros JSON</a>
+            </li>
+            <li>
+              <a href="http://localhost:8081/jsonhow.html"
+                >Como Escrever/Editar JSON</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <!-- #nav-menu-container -->
+      </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero">
+      <div class="hero-container">
+        <h1>Bem-Vindo Ao EasyApps</h1>
+        <h2>
+          Projeto desenvolvido no âmbito da UC de Desenvolvimento Baseado a
+          Modelos, com o objetivo que gerar um sistema e o seu backoffice/base
+          de dados associada através de um ficheiro JSON com um JSON Schema,
+          começe por gerar o sistema ou editar os ficheiros na barra de
+          navegação escolha ficheiros JSON
+        </h2>
+        <a href="" onclick="generateSystem()" class="btn-get-started"
+          >Criar Sistema</a
+        >
+      </div>
+    </section>
+    <!-- End Hero Section -->
+
+    <footer id="footer">
+      <div class="footer-top">
+        <div class="container"></div>
+      </div>
+
+      <div class="container">
+        <div class="copyright">
+          &copy; Copyright <strong>Regna</strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        </div>
+      </div>
+    </footer>
+
+    <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/counterup/counterup.min.js"></script>
+    <script src="assets/vendor/wow/wow.min.js"></script>
+    <script src="assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+    <script src="assets/vendor/superfish/superfish.min.js"></script>
+    <script src="assets/vendor/hoverIntent/hoverIntent.js"></script>
+    <script src="assets/vendor/venobox/venobox.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
   </body>
 </html>

@@ -4,11 +4,13 @@
   "type": "object",
   "properties": {
     "name": {
-      "description": "Nome do genero",
+      "description": "Nome do genero editado",
       "prettyName": "Género",
       "type": "string",
       "maxLength": 254
     }
   },
-  "required": ["name"]
+  "required": [
+    "name"
+  ]
 }

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+    ></script>
+
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>Regna Bootstrap Template</title>
+    <meta content="" name="descriptison" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet" />
+    <link
+      href="assets/vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/venobox/venobox.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/style.css" rel="stylesheet" />
+
+    <!-- =======================================================
+  * Template Name: Regna - v2.0.0
+  * Template URL: https://bootstrapmade.com/regna-bootstrap-onepage-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+    <link href="assets/css/jsoneditor.css" rel="stylesheet" />
+    <script src="assets/js/jsoneditor.js"></script>
+    <script src="assets/js/sweetalert2.all.min.js"></script>
+    <script>
+      function load() {
+        let queryString = window.location.search;
+        let validFormat = true;
+        let urlParams = new URLSearchParams(queryString);
+        $.get("http://localhost:8081/schemas/fileExemplo").done(function (
+          data
+        ) {
+          const container = document.getElementById("jsoneditor");
+
+          const options = {
+            language: "pt-BR",
+            mode: "tree",
+            modes: ["code", "form", "text", "tree", "view", "preview"], // allowed modes
+            onError: function (err) {
+              alert(err.toString());
+            },
+            onModeChange: function (newMode, oldMode) {
+              console.log("Mode switched from", oldMode, "to", newMode);
+            },
+          };
+
+          const editor = new JSONEditor(container, options);
+          editor.setMode("code");
+          // set json
+          const initialJson = data;
+          editor.set(initialJson);
+
+          // get json
+          const updatedJson = editor.get();
+
+          document.getElementById("submitBtn").onclick = function () {
+            let text = editor.getText();
+            let parsed = JSON.parse(text);
+
+            Object.keys(parsed).forEach((k) => {
+              if (
+                k == "properties" ||
+                k == "description" ||
+                k == "references" ||
+                k == "title" ||
+                k == "type" ||
+                k == "required"
+              ) {
+                if (k == "type" && parsed.type != "object") {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo type tem de ser obrigatoriamente 'object'",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+                if (k == "title" && !/^([A-Z][a-z]+)+$/.test(parsed.title)) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo title deve começar por maiuscula, conter somente letras e nao mais que 2 maiusculas seguidas!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              } else {
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "As propriedades válidas são properties, description, references, title, type ou required!",
+                  icon: "error",
+                  confirmButtonText: "Ok",
+                  timer: 5000,
+                });
+                validFormat = false;
+              }
+            });
+
+            if (
+              parsed.type &&
+              parsed.title &&
+              parsed.description &&
+              parsed.properties &&
+              parsed.required
+            ) {
+            } else {
+              Swal.fire({
+                title: "Formato Inválido!",
+                text:
+                  "Tem quer ter obrigatoriamente as propriedades properties, description, title, type e required!",
+                icon: "error",
+                confirmButtonText: "Ok",
+                timer: 5000,
+              });
+              validFormat = false;
+            }
+
+            let stringAllProperties = "";
+            //Inicio da Validação das propriedades
+            Object.entries(parsed.properties).forEach((p) => {
+              if (!/^[A-Za-z]+$/.test(p[0])) {
+                console.log(p);
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "As propriedades definidas, no nome só podem ter letras do alfabeto!",
+                  icon: "error",
+                  confirmButtonText: "Ok",
+                  timer: 5000,
+                });
+                validFormat = false;
+              }
+
+              stringAllProperties += p[0] + ",";
+
+              // Inicio das propriedades definidas
+              Object.keys(p[1]).forEach((k) => {
+                if (
+                  k == "description" ||
+                  k == "prettyName" ||
+                  k == "type" ||
+                  k == "maxLength" ||
+                  k == "faker" ||
+                  k == "pattern" ||
+                  k == "unique" ||
+                  k == "minLength" ||
+                  k == "minimum" ||
+                  k == "maximum"
+                ) {
+                } else {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "As propriedades válidas para uma classe são description, prettyName, type, faker, pattern, unique, minLength, maxLength, minimum ou maximum!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              });
+              // Fim das propriedades definidas
+
+              // Inicio da Verificação do tipo
+              if (Object.keys(p[1]).includes("type")) {
+                if (
+                  p[1].type === "string" ||
+                  p[1].type === "date" ||
+                  p[1].type === "integer" ||
+                  p[1].type === "number"
+                ) {
+                } else {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "Os valores aceites para type são string, date, integer ou number!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              } else {
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "Todas as classes definidas em properties têm de ter um atributo type!",
+                  icon: "error",
+                  confirmButtonText: "Ok",
+                  timer: 5000,
+                });
+                validFormat = false;
+              }
+              // Fim da Verificação do tipo
+              // Inicio da Verificaçãod do PrettyName
+              if (Object.keys(p[1]).includes("prettyName")) {
+                if (
+                  /\p{L}/.test(p[1]["prettyName"]) ||
+                  /\d/.test(p[1]["prettyName"]) ||
+                  /[!@#$%^&/*(),.?":{}|<>]/.test(p[1]["prettyName"])
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo prettyName não pode conter numeros nem caracteres especiais!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              } else {
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "Todas as classes definidas em properties têm de ter um atributo prettyName!",
+                  icon: "error",
+                  confirmButtonText: "Ok",
+                  timer: 5000,
+                });
+                validFormat = false;
+              }
+              // Fim da Verificação do PrettyName
+              // Inicio da Verificação da Description
+              if (!Object.keys(p[1]).includes("description")) {
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "Todas as classes definidas em properties têm de ter um atributo description!",
+                  icon: "error",
+                  confirmButtonText: "Ok",
+                  timer: 5000,
+                });
+                validFormat = false;
+              }
+              // Fim da Verificação da Description
+              // Inicio da Verificação do maxLength
+              if (Object.keys(p[1]).includes("maxLength")) {
+                if (
+                  typeof p[1]["maxLength"] == "string" ||
+                  p[1]["maxLength"] <= 0 ||
+                  p[1]["maxLength"] % 1 !== 0
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo maxLength tem de ser um numero maior inteiro que 0!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do maxLength
+              // Inicio da Verificação do minLength
+              if (Object.keys(p[1]).includes("minLength")) {
+                if (
+                  typeof p[1]["minLength"] == "string" ||
+                  p[1]["minLength"] <= 0 ||
+                  p[1]["minLength"] % 1 !== 0
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo minLength tem de ser um numero maior inteiro que 0!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do minLength
+              // Inicio da Verificação do minLength e maxLength
+              if (
+                Object.keys(p[1]).includes("minLength") &&
+                Object.keys(p[1]).includes("maxLength")
+              ) {
+                if (p[1]["minLength"] >= p[1]["maxLength"]) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo minLength tem de ser um numero inferior ao maxLength",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do minLength e maxLength
+              // Inicio da Verificação do minimum
+              if (Object.keys(p[1]).includes("minimum")) {
+                if (
+                  typeof p[1]["minimum"] == "string" ||
+                  p[1]["minimum"] <= 0 ||
+                  p[1]["minimum"] % 1 !== 0
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo minimum tem de ser um numero maior inteiro que 0!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do minimum
+              // Inicio da Verificação do maximum
+              if (Object.keys(p[1]).includes("maximum")) {
+                if (
+                  typeof p[1]["maximum"] == "string" ||
+                  p[1]["maximum"] <= 0 ||
+                  p[1]["maximum"] % 1 !== 0
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo maximum tem de ser um numero maior inteiro que 0!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do maximum
+              // Inicio da Verificação do minimum e do maximum
+              if (
+                Object.keys(p[1]).includes("minimum") &&
+                Object.keys(p[1]).includes("maximum")
+              ) {
+                if (p[1]["minimum"] >= p[1]["maximum"]) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo minimum tem de ser um numero inferior ao maximum!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da Verificação do minimum e do maximum
+              // Inicio da verificação de max/min length com o maximum ou minimum
+              if (
+                Object.keys(p[1]).includes("minimum") ||
+                Object.keys(p[1]).includes("maximum")
+              ) {
+                if (
+                  Object.keys(p[1]).includes("minLength") ||
+                  Object.keys(p[1]).includes("maxLength")
+                ) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "Se tiver um atributo minLength/maxLength nao pode ter um minimum/maximum, e vice-versa!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da verificação de max/min length com o maximum ou minimum
+              // Inicio da verificação do unique
+              if (Object.keys(p[1]).includes("unique")) {
+                if (!p[1]["unique"] || typeof p[1]["unique"] !== "boolean") {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo unique deve ser do tipo Boolean e true, para o unique ser false basta remover esse atributo, por omissão é false!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              }
+              // Fim da verificação do unique
+            });
+            // Fim da Validação das propriedades
+
+            if (parsed.required) {
+              parsed.required.forEach((reqr) => {
+                if (!stringAllProperties.includes(reqr)) {
+                  Swal.fire({
+                    title: "Formato Inválido!",
+                    text:
+                      "O atributo " +
+                      reqr +
+                      " não está definido nas properties, logo nao pode ser required!",
+                    icon: "error",
+                    confirmButtonText: "Ok",
+                    timer: 5000,
+                  });
+                  validFormat = false;
+                }
+              });
+            }
+            // Inicio da Validação das propriedades
+            if (parsed.references) {
+              let validModels = "";
+
+              $.get("http://localhost:8081/schemas/names", function (data) {
+                data.forEach((d) => {
+                  if (d.split(/[-.]/)[1] === parsed.title) {
+                  } else {
+                    validModels += d.split(/[-.]/)[1] + ",";
+                  }
+                });
+              }).then(() => {
+                parsed.references.forEach((ref) => {
+                  Object.getOwnPropertyNames(ref).forEach((r) => {
+                    if (r == "model" || r == "label" || r == "relation") {
+                    } else {
+                      Swal.fire({
+                        title: "Formato Inválido!",
+                        text:
+                          "Uma reference deve ter as seguintes propriedades, relation, model e label!",
+                        icon: "error",
+                        confirmButtonText: "Ok",
+                        timer: 5000,
+                      });
+                      validFormat = false;
+                    }
+                  });
+                });
+
+                Object.entries(parsed.references).forEach((ref) => {
+                  if (
+                    ref[1].relation == "1-M" ||
+                    ref[1].relation == "1-1" ||
+                    ref[1].relation == "M-M"
+                  ) {
+                  } else {
+                    Swal.fire({
+                      title: "Formato Inválido!",
+                      text:
+                        "Os tipos de relações validos são 1-M, 1-1 ou M-M !",
+                      icon: "error",
+                      confirmButtonText: "Ok",
+                      timer: 5000,
+                    });
+                    validFormat = false;
+                  }
+
+                  if (!validModels.includes(ref[1].model)) {
+                    Swal.fire({
+                      title: "Formato Inválido!",
+                      text:
+                        "Os modelos de relações válidos são " +
+                        validModels +
+                        " !",
+                      icon: "error",
+                      confirmButtonText: "Ok",
+                      timer: 5000,
+                    });
+                    validFormat = false;
+                  }
+
+                  $.ajax({
+                    async: false,
+                    type: "GET",
+                    url:
+                      "http://localhost:8081/schemas/properties/" +
+                      ref[1].model,
+                    success: function (data) {
+                      if (!data.properties.includes(ref[1].label)) {
+                        Swal.fire({
+                          title: "Formato Inválido!",
+                          text:
+                            "As labels para o model " +
+                            ref[1].model +
+                            " da referencia válidos são " +
+                            data.properties +
+                            " !",
+                          icon: "error",
+                          confirmButtonText: "Ok",
+                          timer: 5000,
+                        });
+                        validFormat = false;
+                      }
+                    },
+                  });
+                });
+              });
+            }
+
+            setTimeout(function () {
+              if (validFormat) {
+                var xmlhttp = new XMLHttpRequest();
+
+                xmlhttp.onreadystatechange = function () {
+                  if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                    if (xmlhttp.status == 201) {
+                      Swal.fire({
+                        title: "Editado!",
+                        text: "Ficheiro Editado Com Sucesso!",
+                        icon: "success",
+                        timer: 2000,
+                      }).then((onfulfilled) => {
+                        window.location.href =
+                          "http://localhost:8081/jsonfiles.html";
+                      });
+                    } else if (xmlhttp.status == 401) {
+                      Swal.fire({
+                        title: "Erro Do Servidor!",
+                        text: "Erro a Editar o Ficheiro",
+                        icon: "error",
+                        confirmButtonText: "Ok",
+                        timer: 5000,
+                      });
+                    } else {
+                      console.log("something else other than 200 was returned");
+                    }
+                  }
+                };
+                let editorText = editor.getText();
+                xmlhttp.open("POST", "/schemas/add/" + parsed.title, true);
+                xmlhttp.setRequestHeader(
+                  "Content-Type",
+                  "application/json; charset=UTF-8"
+                );
+                xmlhttp.send(editorText);
+
+                xmlhttp.response;
+              } else {
+                Swal.fire({
+                  title: "Formato Inválido!",
+                  text:
+                    "Houve um erro com o seu JSON criado, se ao submeter nao obter feedback dê refresh na pagina!",
+                  icon: "warning",
+                  confirmButtonText: "Ok",
+                  timer: 2000,
+                });
+              }
+            }, 4000);
+          };
+        });
+      }
+    </script>
+  </head>
+
+  <body onload="load()">
+    <!-- ======= Header ======= -->
+    <header id="header">
+      <div class="container">
+        <div id="logo" class="pull-left">
+          <a href="#hero"><img src="assets/img/logo.png" alt="" /></a>
+          <!-- Uncomment below if you prefer to use a text logo -->
+          <!--<h1><a href="#hero">Regna</a></h1>-->
+        </div>
+
+        <nav id="nav-menu-container">
+          <ul class="nav-menu">
+            <li>
+              <a href="http://localhost:8081">Página Inicial</a>
+            </li>
+            <li class="menu-active">
+              <a href="http://localhost:8081/jsonfiles.html">Ficheiros JSON</a>
+            </li>
+            <li>
+              <a href="http://localhost:8081/jsonhow.html"
+                >Como Escrever/Editar JSON</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <!-- #nav-menu-container -->
+      </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero">
+      <div class="hero-container" id="container-hero">
+        <div
+          id="jsoneditor"
+          style="width: 600px; height: 600px; background-color: white;"
+        ></div>
+        <button id="submitBtn" class="btn-get-started">Submeter</button>
+      </div>
+    </section>
+
+    <!-- End Hero Section -->
+
+    <footer id="footer">
+      <div class="footer-top">
+        <div class="container"></div>
+      </div>
+
+      <div class="container">
+        <div class="copyright">
+          &copy; Copyright <strong>Regna</strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        </div>
+      </div>
+    </footer>
+
+    <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/counterup/counterup.min.js"></script>
+    <script src="assets/vendor/wow/wow.min.js"></script>
+    <script src="assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+    <script src="assets/vendor/superfish/superfish.min.js"></script>
+    <script src="assets/vendor/hoverIntent/hoverIntent.js"></script>
+    <script src="assets/vendor/venobox/venobox.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

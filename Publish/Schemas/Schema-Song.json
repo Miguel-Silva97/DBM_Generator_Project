@@ -33,15 +33,18 @@
   "references": [
     {
       "model": "Artist",
-      "relation": "1-M"
+      "relation": "1-1",
+      "label": "name"
     },
     {
       "model": "Genre",
-      "relation": "M-M"
+      "relation": "M-M",
+      "label": "name"
     },
     {
       "model": "Album",
-      "relation": "1-M"
+      "relation": "1-M",
+      "label": "name"
     }
   ]
 }

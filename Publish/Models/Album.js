@@ -40,11 +40,34 @@ class Album {
       database.run("DELETE FROM Album WHERE id = ?", [id], callback);
    }
 
+   static many(model, id, callback){
+      let tablename = "Album".localeCompare(model) === -1 ? "Album_" + model : model
+      + "_Album";
+      database.where(`SELECT Album.*
+      FROM Album
+      INNER JOIN ${tablename} ON ${tablename}.album_id = Album.id
+      WHERE ${tablename}.${model.toLowerCase()}_id = ?`, [id],
+      Album, callback);
+   }
+
    save (callback){
+      if(false === false){
       if(this.id)
-         database.run("UPDATE Album SET name = ?, releaseDate = ?, ean = ?, information = ?, label = ?, copyright = ?, totalLength = ?  WHERE id = ?", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength, this.id], callback);
+         database.run("UPDATE Album SET name = ?, releaseDate = ?, ean = ?, information = ?, label = ?, copyright = ?, totalLength = ? , artist_id = ? WHERE id = ?", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength, this.artist_id, this.id], callback);
       else
-         database.run("INSERT INTO Album (name, releaseDate, ean, information, label, copyright, totalLength) VALUES (?, ?, ?, ?, ?, ?, ?)", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength], callback);
+         database.run("INSERT INTO Album (name, releaseDate, ean, information, label, copyright, totalLength, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength, this.artist_id], callback);
+      } else {
+
+         if(this.id){
+             database.run("UPDATE Album SET name = ?, releaseDate = ?, ean = ?, information = ?, label = ?, copyright = ?, totalLength = ? , artist_id = ? WHERE id = ?", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength, this.artist_id, this.id], callback);
+         } else {
+            database.run("INSERT INTO Album (name, releaseDate, ean, information, label, copyright, totalLength, artist_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [this.name, this.releaseDate.toISOString().substr(0, 10),this.ean, this.information, this.label, this.copyright, this.totalLength, this.artist_id], (cb) => {
+            });
+            
+         }
+
+         
+      }
    }
 }
 

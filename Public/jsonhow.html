@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://kit.fontawesome.com/a91a27e46f.js" crossorigin="anonymous"></script>
+    <title>EasyApps Webpage</title>
+    <meta content="" name="descriptison" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon" />
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,700,700i|Poppins:300,400,500,700"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link
+      href="assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet" />
+    <link
+      href="assets/vendor/font-awesome/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <link href="assets/vendor/venobox/venobox.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="assets/css/style.css" rel="stylesheet" />
+
+    <!-- =======================================================
+  * Template Name: Regna - v2.0.0
+  * Template URL: https://bootstrapmade.com/regna-bootstrap-onepage-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+    <script>
+      function generateSystem() {
+        $.post("http://localhost:8081/generate");
+      }
+    </script>
+  </head>
+
+  <body>
+    <!-- ======= Header ======= -->
+    <header id="header">
+      <div class="container">
+        <div id="logo" class="pull-left">
+          <a href="#hero"><img src="assets/img/logo.png" alt="" /></a>
+          <!-- Uncomment below if you prefer to use a text logo -->
+          <!--<h1><a href="#hero">Regna</a></h1>-->
+        </div>
+
+        <nav id="nav-menu-container">
+          <ul class="nav-menu">
+            <li>
+              <a href="http://localhost:8081">Página Inicial</a>
+            </li>
+            <li>
+              <a href="http://localhost:8081/jsonfiles.html">Ficheiros JSON</a>
+            </li>
+            <li class="menu-active">
+              <a href="http://localhost:8081/jsonhow.html"
+                >Como Escrever/Editar JSON</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <!-- #nav-menu-container -->
+      </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- ======= Hero Section ======= -->
+    <section id="hero">
+      <div class="hero-container">
+        <h1>Informação Necessária Para Editar JSON Schemas Na Plataforma</h1>
+        <h2>
+          Projeto desenvolvido no âmbito da UC de Desenvolvimento Baseado a
+          Modelos, com o objetivo que gerar um sistema e o seu backoffice/base
+          de dados associada através de um ficheiro JSON com um JSON Schema,
+          começe por gerar o sistema ou editar os ficheiros na barra de
+          navegação escolha ficheiros JSON
+        </h2>
+        <div class="accordion" id="accordionExample">
+          <div class="card">
+              <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true">     
+                  <span class="title">Title, Type e Description </span>
+                  <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+              </div>
+              <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
+                  <div class="card-body">
+                      <p>Title - Titulo da classe que dará nome ao JSON Schema, só aceita e letras e começar por letra Maiuscula</p>
+                      <p>Type - O tipo deverá ser sempre "object"</p>
+                      <p>Description - Uma breve descrição do que representa a classe</p>
+                  </div>
+              </div>
+          </div>
+          <div class="card">
+              <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">     
+                  <span class="title">Properties</span>
+                  <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+              </div>
+              <div id="collapseTwo" class="collapse" data-parent="#accordionExample">
+                  <div class="card-body">
+                      <p>Onde se define cada variavel sendo que o nome deve ser só letras em minusculas</p>
+                      <p>Description- Breve descrição do que representa o atributo</p>
+                      <p>PrettyName- Nome da variável mais apresentável para ser apresentado nas views Exemplo: releaseDate > Data de Lançamento</p>
+                      <p>Type - Os tipos de variável aceite pelo sistema são "string","date","integer" e "number"</p>
+                      <p>Restrições:</p>
+                      <p>   Unico: Se pretender uma variavel de valor unico definir "unique" = true, é falso por omissao</p>
+                      <p>Maximo ou Minimo(number,integer): Sempre valores acima de 0 e inteiros, se pretender maximo "maximum" = 2, se pretender minimo "minimum" = 1 </p>
+                      <p>Tamanho Maximo ou Minimo(string): Sempre valores acima de 0 e inteiros, se pretender maximo "maxLength" = 254, se pretender minimo "minLength" = 20</p>
+                      
+              </div>
+          </div>
+          <div class="card">
+              <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false">
+                  <span class="title">Required</span>
+                  <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+              </div>
+              <div id="collapseThree" class="collapse" data-parent="#accordionExample">
+                  <div class="card-body">
+                      <p>Neste array de parametros, deve colocar as variáveis que criou para a classe que pretende que sejam obrigatórias</p>
+                  </div>
+              </div>
+          </div>
+          <div class="card">
+            <div class="card-header collapsed" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false">
+                <span class="title">References</span>
+                <span class="accicon"><i class="fas fa-angle-down rotate-icon"></i></span>
+            </div>
+            <div id="collapseThree" class="collapse" data-parent="#accordionExample">
+                <div class="card-body">
+                    <p>Se pretender adicionar uma referencia ou varias de uma tabela adicionar o parametro references neste formato:</p>
+                                "references": [
+                {
+                  "model": "Artist",
+                  "relation": "1-M",
+                  "label": "name"
+                }
+              ]
+              <p>Model - Classe que está a referenciar</p>
+              <p>Relation - Tipo de relação entre as classes 1-M ,M-M ou 1-1</p>
+              <p>Label - Variável da classe que está a ser referenciada que quer utilizar para demonstrar a relação</p>
+                </div>
+            </div>
+        </div>
+        
+      </div>
+    </section>
+    <!-- End Hero Section -->
+
+    <footer id="footer">
+      <div class="footer-top">
+        <div class="container"></div>
+      </div>
+
+      <div class="container">
+        <div class="copyright">
+          &copy; Copyright <strong>Regna</strong>. All Rights Reserved
+        </div>
+        <div class="credits">
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        </div>
+      </div>
+    </footer>
+
+    <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/counterup/counterup.min.js"></script>
+    <script src="assets/vendor/wow/wow.min.js"></script>
+    <script src="assets/vendor/waypoints/jquery.waypoints.min.js"></script>
+    <script src="assets/vendor/superfish/superfish.min.js"></script>
+    <script src="assets/vendor/hoverIntent/hoverIntent.js"></script>
+    <script src="assets/vendor/venobox/venobox.min.js"></script>
+
+    <!-- Template Main JS File -->
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

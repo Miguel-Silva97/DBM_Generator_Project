@@ -1,4 +1,32 @@
 <html>
+ <head>
+ <script>
+{{#hasReferences}}
+                function loadValues(model,values,label,controlId){
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", `../../../api/${model}/${values}`, true);
+                    xhr.onreadystatechange = function () {
+                        if(xhr.readyState === 4 && xhr.status === 200) {
+                            var control = document.getElementById(controlId);
+                            var response = JSON.parse(this.responseText);
+                            if(response.constructor === Array)
+                                control.innerHTML = response.map(row => { return row[label] }).join();
+                            else
+                                control.innerHTML = response[label];
+                        }
+                    }
+                    xhr.send();
+                }
+
+                window.onload = function() {
+                {{#references}}
+ 
+                loadValues('{{model}}','{{values}}','{{labelRef}}','label{{model}}value');
+                {{/references}}
+            }
+{{/hasReferences}}
+ </script>
+ </head>
  <body>
  {{#properties}}
  <div>
@@ -6,5 +34,9 @@
  <label>{{value}}</label>
  </div>
  {{/properties}}
+ {{#references}}
+ <label>{{model}}:</label>
+ <label id="label{{model}}value"></label>
+ {{/references}}
  </body>
 </html>
